@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:payscanner/pay.dart';
+import 'package:payscanner/setting.dart';
 
 void main() {
   runApp(MyApp());
@@ -67,7 +68,13 @@ class MyHomePage extends StatelessWidget {
                     height: 40.0,
                   ),
                   TextButton(
-                    onPressed: () => {},
+                    onPressed: () => {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Setting(),
+                          ))
+                    },
                     child: CircleAvatar(
                       maxRadius: 80,
                       backgroundColor: Colors.white24,
