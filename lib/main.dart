@@ -17,6 +17,11 @@ class MyApp extends StatelessWidget {
         primaryColor: Colors.blueGrey,
       ),
       home: MyHomePage(),
+      routes: <String, WidgetBuilder>{
+        '/pay': (BuildContext context) => Pay(),
+        '/setting': (BuildContext context) => Setting(),
+        '/home': (BuildContext context) => MyApp(),
+      },
     );
   }
 }
@@ -49,11 +54,7 @@ class MyHomePage extends StatelessWidget {
                 children: [
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Pay(),
-                          ));
+                      Navigator.pushNamed(context, '/pay');
                     },
                     child: CircleAvatar(
                       maxRadius: 80,
@@ -68,12 +69,8 @@ class MyHomePage extends StatelessWidget {
                     height: 40.0,
                   ),
                   TextButton(
-                    onPressed: () => {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Setting(),
-                          ))
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/setting');
                     },
                     child: CircleAvatar(
                       maxRadius: 80,

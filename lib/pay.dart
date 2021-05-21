@@ -3,6 +3,7 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:payscanner/aftertransac.dart';
 
 class Pay extends StatefulWidget {
   @override
@@ -83,9 +84,13 @@ class _PayState extends State<Pay> {
 
   Future scan() async {
     try {
+      // HTTP REQUEST TO AUTHORIZE SALE
       var barcode = await BarcodeScanner.scan();
       var code = barcode.rawContent;
       var amount = myController.text;
+
+      DateTime now = new DateTime.now();
+      DateTime date = new DateTime(now.year, now.month, now.day);
 
       var headers = {
         'Authorization':
@@ -94,21 +99,36 @@ class _PayState extends State<Pay> {
       var request = http.Request(
           'POST',
           Uri.parse(
-              'http://mealcard.rajasaudagar.com/api/student?code=$code&amount=$amount'));
+              'http://mealcard.rajasaudagar.com/api/student?code=$code&amount=$amount&date=$date'));
 
       request.headers.addAll(headers);
 
       http.StreamedResponse response = await request.send();
 
+      // CONDITIONAL FOR RESPONSE
       if (response.statusCode == 200) {
+        // for success & not enough balance
         var placeholder = await response.stream.bytesToString();
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AfterTransac(placeholder),
+            ));
+
         setState(() {
           this.barcode = placeholder;
         });
       } else {
+        // other than that (code not exist)
         var placeholder = await response.stream.bytesToString() +
-            "reason: " +
-            response.reasonPhrase;
+            "\nReason: " +
+            response.reasonPhrase +
+            date.toString();
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AfterTransac(placeholder),
+            ));
         setState(() {
           this.barcode = placeholder;
         });
