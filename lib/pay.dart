@@ -120,10 +120,7 @@ class _PayState extends State<Pay> {
         });
       } else {
         // other than that (code not exist)
-        var placeholder = await response.stream.bytesToString() +
-            "\nReason: " +
-            response.reasonPhrase +
-            date.toString();
+        var placeholder = await response.stream.bytesToString();
         Navigator.push(
             context,
             MaterialPageRoute(

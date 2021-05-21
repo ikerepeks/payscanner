@@ -16,19 +16,23 @@ class AfterTransac extends StatelessWidget {
         title: Text("Transaction Status"),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(10.0),
         child: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 "Transaction Status",
-                style: TextStyle(fontSize: 20.0),
+                style: TextStyle(fontSize: 40.0),
               ),
               SizedBox(
                 height: 12.0,
               ),
-              Text(status),
+              Text(
+                status,
+                style: TextStyle(fontSize: 20.0),
+                textAlign: TextAlign.center,
+              ),
               SizedBox(
                 height: 12.0,
               ),
