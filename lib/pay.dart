@@ -2,6 +2,7 @@
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 
 class Pay extends StatefulWidget {
   @override
@@ -83,7 +84,35 @@ class _PayState extends State<Pay> {
   Future scan() async {
     try {
       var barcode = await BarcodeScanner.scan();
-      setState(() => this.barcode = barcode.rawContent);
+      var code = barcode.rawContent;
+      var amount = myController.text;
+
+      var headers = {
+        'Authorization':
+            'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiN2ZlNTQ5MDcxZTM1ZmU0ZmQ5NzA2YjE4NWM2OGVhMTdhYTkzMWNkMmZiNGMyYmU1YWY0Njg1MmQ5YzFiNmMxMTcyOWU4YzFjZWQ1M2NiYjEiLCJpYXQiOjE2MjE0NzcyNDkuOTg1MjU4MTAyNDE2OTkyMTg3NSwibmJmIjoxNjIxNDc3MjQ5Ljk4NTI2NTAxNjU1NTc4NjEzMjgxMjUsImV4cCI6MTY1MzAxMzI0OS45NzgzOTU5Mzg4NzMyOTEwMTU2MjUsInN1YiI6IjEiLCJzY29wZXMiOltdfQ.Mx24LnSpBCDfmJ4eJ3p0HwBhy6ddl_cC6lQw0_tJW39QUPkhZWh3LdxoJYO85lOGx521D0QpGDMZA2A-jYe-A7tGdljKlpNdIfnIsSSE71U4celyJVInfh40qcwfRoZ6DP4X93ZB6j1WDnK6quVlpX_6Jp391nziNwa45trs7ma9PrPjP5QNDAia-ZOmvA0SZNW3hzCL1SdmABWo44d4Qz3gftNmonYkMi6Nvf9HOVY4b87UyBvA3c93WplSRYCM92hwaQ-sRAQrkXBxPwiLrGtiPLnrXP-q4zujMlNtNc81NH1cnThjtCn2rrShZfxksRCu5AKmTp8F-twsg9c6dZX6RX9hCY70CnltWOf04kErRSeD4Cja6_BN7EYa1GGWie9ViqQytqfalu9d7ZedybpndidDbf6meY-4N8jI5VyeWYKrC1idAuhx_5d0sAi6uChEKEdxgDk2IBq2mx2tgF-WA_bqsGETHREYUBUZ7y2QsaW8v0UCtP5QPyie1wQnNleraohSTdHrid-sHU5-4arQMFa6wn2YwPV8UxgqZDNwc9H-KQXAY0tKSIlUnZY1xMP_z7YqtLVnALv6pnc5W9_I1Zof4rWRceQ3fOqz5VTslpiwXWeKfKMZELjjU-rOqWD7abQkVruLLtrudDsRXmkPNhMYRBGVeIobf3TK9As'
+      };
+      var request = http.Request(
+          'POST',
+          Uri.parse(
+              'http://mealcard.rajasaudagar.com/api/student?code=$code&amount=$amount'));
+
+      request.headers.addAll(headers);
+
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        var placeholder = await response.stream.bytesToString();
+        setState(() {
+          this.barcode = placeholder;
+        });
+      } else {
+        var placeholder = await response.stream.bytesToString() +
+            "reason: " +
+            response.reasonPhrase;
+        setState(() {
+          this.barcode = placeholder;
+        });
+      }
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.cameraAccessDenied) {
         setState(() {
