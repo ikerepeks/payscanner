@@ -59,6 +59,16 @@ class _SettingState extends State<Setting> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      Text("Terminal Email"),
+                      TextField(
+                        readOnly: true,
+                        decoration: InputDecoration(
+                            hintText: snapshot.data.first.email),
+                      ),
+                      SizedBox(
+                        height: 30.0,
+                      ),
+                      Text("Current Bearer Token"),
                       TextField(
                         readOnly: true,
                         decoration: InputDecoration(
@@ -67,14 +77,6 @@ class _SettingState extends State<Setting> {
                       SizedBox(
                         height: 30.0,
                       ),
-                      ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all<Color>(Colors.green),
-                        ),
-                        onPressed: () {},
-                        child: Text("Get New Token"),
-                      )
                     ],
                   ),
                 ),

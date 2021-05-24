@@ -1,8 +1,10 @@
 // ignore: import_of_legacy_library_into_null_safe
+import 'dart:convert';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:payscanner/Model/Vendor.dart';
 import 'package:payscanner/aftertransac.dart';
 
 class Pay extends StatefulWidget {
@@ -58,7 +60,7 @@ class _PayState extends State<Pay> {
                         color: Colors.green,
                         size: 50.0,
                       ),
-                      onPressed: scan,
+                      onPressed: () => scan(context),
                     ),
                   ),
                   SizedBox(height: 20.0),
@@ -82,20 +84,33 @@ class _PayState extends State<Pay> {
     );
   }
 
-  Future scan() async {
+  Future scan(BuildContext context) async {
     try {
       // HTTP REQUEST TO AUTHORIZE SALE
       var barcode = await BarcodeScanner.scan();
       var code = barcode.rawContent;
       var amount = myController.text;
+      String email = "tester1@gmail.com";
+      String pw = "tester11234";
+      String token = "";
 
+      // Get current date for validity condition
       DateTime now = new DateTime.now();
       DateTime date = new DateTime(now.year, now.month, now.day);
 
-      var headers = {
-        'Authorization':
-            'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiN2ZlNTQ5MDcxZTM1ZmU0ZmQ5NzA2YjE4NWM2OGVhMTdhYTkzMWNkMmZiNGMyYmU1YWY0Njg1MmQ5YzFiNmMxMTcyOWU4YzFjZWQ1M2NiYjEiLCJpYXQiOjE2MjE0NzcyNDkuOTg1MjU4MTAyNDE2OTkyMTg3NSwibmJmIjoxNjIxNDc3MjQ5Ljk4NTI2NTAxNjU1NTc4NjEzMjgxMjUsImV4cCI6MTY1MzAxMzI0OS45NzgzOTU5Mzg4NzMyOTEwMTU2MjUsInN1YiI6IjEiLCJzY29wZXMiOltdfQ.Mx24LnSpBCDfmJ4eJ3p0HwBhy6ddl_cC6lQw0_tJW39QUPkhZWh3LdxoJYO85lOGx521D0QpGDMZA2A-jYe-A7tGdljKlpNdIfnIsSSE71U4celyJVInfh40qcwfRoZ6DP4X93ZB6j1WDnK6quVlpX_6Jp391nziNwa45trs7ma9PrPjP5QNDAia-ZOmvA0SZNW3hzCL1SdmABWo44d4Qz3gftNmonYkMi6Nvf9HOVY4b87UyBvA3c93WplSRYCM92hwaQ-sRAQrkXBxPwiLrGtiPLnrXP-q4zujMlNtNc81NH1cnThjtCn2rrShZfxksRCu5AKmTp8F-twsg9c6dZX6RX9hCY70CnltWOf04kErRSeD4Cja6_BN7EYa1GGWie9ViqQytqfalu9d7ZedybpndidDbf6meY-4N8jI5VyeWYKrC1idAuhx_5d0sAi6uChEKEdxgDk2IBq2mx2tgF-WA_bqsGETHREYUBUZ7y2QsaW8v0UCtP5QPyie1wQnNleraohSTdHrid-sHU5-4arQMFa6wn2YwPV8UxgqZDNwc9H-KQXAY0tKSIlUnZY1xMP_z7YqtLVnALv6pnc5W9_I1Zof4rWRceQ3fOqz5VTslpiwXWeKfKMZELjjU-rOqWD7abQkVruLLtrudDsRXmkPNhMYRBGVeIobf3TK9As'
-      };
+      // get bearer token
+      var gettoken = await http.post(Uri.parse(
+          'http://mealcard.rajasaudagar.com/api/login?email=$email&password=$pw'));
+
+      if (gettoken.statusCode == 200) {
+        Vendor holder = Vendor.fromJson(jsonDecode(gettoken.body));
+        token = holder.token;
+      } else {
+        token = gettoken.reasonPhrase;
+      }
+
+      // authorization of sale
+      var headers = {'Authorization': "Bearer " + token};
       var request = http.Request(
           'POST',
           Uri.parse(
